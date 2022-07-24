@@ -10,6 +10,10 @@ type Store struct {
 	data map[string]so.Order
 }
 
+func NewStore() Store {
+	return Store{data: make(map[string]so.Order)}
+}
+
 func (s *Store) Add(order so.Order) error {
 	_, ok := s.data[order.OrderUid]
 	if ok {
