@@ -54,7 +54,7 @@ Loop:
 	for {
 		select {
 		case <-time.After(2 * time.Second):
-			rec := so.generateNewOrder(test)
+			rec := so.GenerateNewOrder(test)
 			err = sc.Publish(subj, rec)
 			if err == nil {
 				log.Printf("%s sends successfully\n", string(rec))
