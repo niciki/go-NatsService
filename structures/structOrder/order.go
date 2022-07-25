@@ -1,7 +1,13 @@
 package order
 
 import (
+	"encoding/json"
+	"log"
+	"math/rand"
 	"time"
+
+	"github.com/e154/vydumschik"
+	"github.com/essentialkaos/translit"
 )
 
 type Order struct {
@@ -56,4 +62,49 @@ type Items struct {
 	NmId        int    `json:"nm_id" db:"nm_id"`
 	Brand       string `json:"brand" db:"brand"`
 	Status      int    `json:"status" db:"status"`
+}
+
+func generateNewOrder(test []byte) []byte {
+	var order Order
+	json.Unmarshal(test, &order)
+	rand.Seed(time.Now().UnixNano())
+	chars := []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+		"abcdefghijklmnopqrstuvwxyz" +
+		"0123456789")
+	// generate order_uid
+	length := 19
+	var order_uid string
+	for i := 0; i < length; i++ {
+		order_uid += string(chars[rand.Intn(len(chars))])
+	}
+	// generate name, surname, lastname
+	order.OrderUid = order_uid
+	order.Payment.Transaction = order_uid
+	var nameGenerator vydumschik.Name
+	order.Delivery.Name = translit.EncodeToPCGN(nameGenerator.Full_name(""))
+	// generate adress and city
+	var adressGenerator vydumschik.Address
+	order.Delivery.Address = translit.EncodeToPCGN(adressGenerator.Street_address())
+	cities := []string{"Moscow", "Saint Petersburg", "Novosibirsk", "Yekaterinburg",
+		"Kazan", "Nizhny Novgorod", "Chelyabinsk", "Samara", "Ufa"}
+	order.Delivery.City = cities[rand.Intn(9)]
+	// generate email
+	email := ""
+	lengthEmail := rand.Intn(10)
+	for i := 0; i < lengthEmail; i++ {
+		email += string(chars[rand.Intn(len(chars))])
+	}
+	order.Delivery.Email = email + "@gmail.com"
+	// generate data of payment
+	order.Payment.Amount = rand.Intn(20000)
+	order.Payment.PaymentDt = rand.Intn(20000000)
+	order.Payment.DeliveryCost = rand.Intn(order.Payment.Amount)
+
+	order.DateCreated = time.Now()
+	orderByte, err := json.MarshalIndent(order, "", "\t")
+	if err != nil {
+		log.Print(err)
+		return []byte{}
+	}
+	return orderByte
 }

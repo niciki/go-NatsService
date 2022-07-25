@@ -2,7 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"html/template"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 
@@ -22,22 +25,62 @@ func main() {
 	}
 	subj := "sub"
 	sub, err := sc.Subscribe(subj, func(m *stan.Msg) {
-		json.Unmarshal(m.Data, &newRecord)
-		CacheStore.Add(newRecord)
+		err := json.Unmarshal(m.Data, &newRecord)
+		// wrong model of data
+		if err != nil {
+			log.Print(err)
+		} else {
+			err := CacheStore.Add(newRecord)
+			if err != nil {
+				log.Print(err)
+			}
+			log.Print("+1\n")
+		}
 	}, stan.StartWithLastReceived())
 	if err != nil {
 		log.Println(err.Error())
 	}
 	log.Printf("Listening on [%s]", subj)
-	doneCh := make(chan bool)
+	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		switch req.Method {
+		case "GET":
+			tmpl, err := template.ParseFiles("../template/server.html")
+			if err != nil {
+				http.Error(w, err.Error(), 400)
+				return
+			}
+			err = tmpl.Execute(w, nil)
+			if err != nil {
+				http.Error(w, err.Error(), 400)
+				return
+			}
+		case "POST":
+			if val, err := CacheStore.Get(req.PostFormValue("order_uid")); err == nil {
+				b, err := json.MarshalIndent(val, "", "\t")
+				if err != nil {
+					log.Println(err)
+				} else {
+					log.Printf("Отправлены данные с order_uid: %s\n", req.PostFormValue("order_uid"))
+					fmt.Fprint(w, string(b))
+				}
+			} else {
+				log.Println("Структура с таким order_uid отсутствует")
+				fmt.Fprint(w, "Нет записей с таким order_uid ", err)
+			}
+		}
+	})
+	log.Fatal(http.ListenAndServe(":8080", nil))
+	endChan := make(chan struct{})
 	go func() {
-		sigCh := make(chan os.Signal, 1)
-		signal.Notify(sigCh, os.Interrupt)
-		<-sigCh
+		endChanSignal := make(chan os.Signal, 1)
+		signal.Notify(endChanSignal, os.Interrupt)
+		<-endChanSignal
+		log.Print("end\n")
 		sub.Unsubscribe()
-		doneCh <- true
+		sc.Close()
+		endChan <- struct{}{}
+		close(endChanSignal)
+		close(endChan)
 	}()
-	<-doneCh
-	sub.Unsubscribe()
-	sc.Close()
+	<-endChan
 }

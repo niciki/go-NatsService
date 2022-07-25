@@ -5,11 +5,22 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-
-	so "github.com/niciki/go-NatsService/structures/structOrder"
+	"os/signal"
+	"time"
 
 	"github.com/nats-io/stan.go"
+	so "github.com/niciki/go-NatsService/structures/structOrder"
 )
+
+func waitExit(endChan chan struct{}) {
+	endChanSignal := make(chan os.Signal, 1)
+	signal.Notify(endChanSignal, os.Interrupt)
+	<-endChanSignal
+	log.Print("end\n")
+	endChan <- struct{}{}
+	close(endChanSignal)
+	close(endChan)
+}
 
 func main() {
 	clusterID := "test-cluster" // nats cluster id
@@ -27,14 +38,32 @@ func main() {
 		return
 	}
 	defer f.Close()
-	rec, err := ioutil.ReadAll(f)
+	test, err := ioutil.ReadAll(f)
 	if err != nil {
 		fmt.Println("read to fd fail", err)
 		return
 	}
-	err = sc.Publish(subj, rec)
+	endChan := make(chan struct{})
+	go waitExit(endChan)
+	// sends test order
+	err = sc.Publish(subj, test)
 	if err == nil {
-		log.Printf("%s sends successfully\n", string(rec))
+		log.Printf("%s sends successfully\n", string(test))
+	}
+Loop:
+	for {
+		select {
+		case <-time.After(2 * time.Second):
+			rec := so.generateNewOrder(test)
+			err = sc.Publish(subj, rec)
+			if err == nil {
+				log.Printf("%s sends successfully\n", string(rec))
+			} else {
+				log.Print(err)
+			}
+		case <-endChan:
+			break Loop
+		}
 	}
 	sc.Close()
 }
