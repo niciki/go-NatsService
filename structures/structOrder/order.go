@@ -64,7 +64,7 @@ type Items struct {
 	Status      int    `json:"status" db:"status"`
 }
 
-func generateNewOrder(test []byte) []byte {
+func GenerateNewOrder(test []byte) []byte {
 	var order Order
 	json.Unmarshal(test, &order)
 	rand.Seed(time.Now().UnixNano())
