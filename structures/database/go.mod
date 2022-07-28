@@ -1,4 +1,4 @@
-module github.com/niciki/go-NatsService/structures/db
+module github.com/niciki/go-NatsService/structures/database
 
 go 1.18
 
