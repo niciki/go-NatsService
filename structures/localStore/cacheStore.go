@@ -30,3 +30,11 @@ func (s *Store) Get(orderUid string) (so.Order, error) {
 	}
 	return so.Order{}, errors.New("there isn't record with such OrderUid")
 }
+
+func (s *Store) GetAll() []so.Order {
+	res := make([]so.Order, len(s.data), 0)
+	for _, order := range s.data {
+		res = append(res, order)
+	}
+	return res
+}

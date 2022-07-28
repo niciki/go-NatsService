@@ -10,6 +10,7 @@ import (
 
 	"github.com/nats-io/stan.go"
 	so "github.com/niciki/go-NatsService/structures/structOrder"
+	"github.com/spf13/viper"
 )
 
 func waitExit(endChan chan struct{}) {
@@ -22,12 +23,21 @@ func waitExit(endChan chan struct{}) {
 	close(endChan)
 }
 
+func InitConfig() error {
+	viper.AddConfigPath("../configs")
+	viper.SetConfigName("config")
+	return viper.ReadInConfig()
+}
+
 func main() {
 	clusterID := "test-cluster" // nats cluster id
 	clientID := "client0"
 	example := new(so.Order)
 	fmt.Print(example)
-	sc, err := stan.Connect(clusterID, clientID, stan.NatsURL("127.0.0.1:4222"))
+	if err := InitConfig(); err != nil {
+		log.Fatal(err)
+	}
+	sc, err := stan.Connect(clusterID, clientID, stan.NatsURL("127.0.0.1:"+viper.GetString("port_nats")))
 	if err != nil {
 		log.Fatal(err)
 	}

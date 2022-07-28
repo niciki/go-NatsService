@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"db"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -12,14 +14,39 @@ import (
 	"github.com/nats-io/stan.go"
 	ls "github.com/niciki/go-NatsService/structures/localStore"
 	so "github.com/niciki/go-NatsService/structures/structOrder"
+	"github.com/spf13/viper"
 )
+
+func waitExit(endChan chan struct{}) {
+	endChanSignal := make(chan os.Signal, 1)
+	signal.Notify(endChanSignal, os.Interrupt)
+	<-endChanSignal
+	log.Print("end\n")
+	endChan <- struct{}{}
+	close(endChanSignal)
+	close(endChan)
+}
 
 func main() {
 	clusterID := "test-cluster"
 	clientID := "client1"
-	sc, err := stan.Connect(clusterID, clientID, stan.NatsURL("127.0.0.1:4222"))
-	newRecord := *new(so.Order)
+	if err := InitConfig(); err != nil {
+		log.Fatal(err)
+	}
+	// initialise database and restore data
+	database, err := db.InitDb(viper.GetString("port_poatgresql"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	// restore data to cache
 	CacheStore := ls.NewStore()
+	err = database.UploadCache(CacheStore)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// connect to nats-stream
+	sc, err := stan.Connect(clusterID, clientID, stan.NatsURL("127.0.0.1:"+viper.GetString("port_nats")))
+	newRecord := *new(so.Order)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -30,11 +57,18 @@ func main() {
 		if err != nil {
 			log.Print(err)
 		} else {
+			// add to cache
 			err := CacheStore.Add(newRecord)
 			if err != nil {
 				log.Print(err)
+			} else {
+				// add to database if record doesn't exist
+				err = database.AddRecord(newRecord)
+				if err != nil {
+					log.Print(err)
+				}
+				log.Print("+1\n")
 			}
-			log.Print("+1\n")
 		}
 	}, stan.StartWithLastReceived())
 	if err != nil {
@@ -69,18 +103,21 @@ func main() {
 			}
 		}
 	})
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	server := &http.Server{Addr: ("127.0.0.1:" + viper.GetString("port_http"))}
+	server.ListenAndServe()
 	endChan := make(chan struct{})
-	go func() {
-		endChanSignal := make(chan os.Signal, 1)
-		signal.Notify(endChanSignal, os.Interrupt)
-		<-endChanSignal
-		log.Print("end\n")
-		sub.Unsubscribe()
-		sc.Close()
-		endChan <- struct{}{}
-		close(endChanSignal)
-		close(endChan)
-	}()
+	go waitExit(endChan)
 	<-endChan
+	sub.Unsubscribe()
+	sc.Close()
+	// disconnect from port of http server
+	server.Shutdown(context.Background())
+	// save data in database
+	database.AddRecord(CacheStore.GetAll()...)
+}
+
+func InitConfig() error {
+	viper.AddConfigPath("../configs")
+	viper.SetConfigName("config")
+	return viper.ReadInConfig()
 }
