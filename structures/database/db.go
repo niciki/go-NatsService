@@ -32,7 +32,7 @@ func InitDb(port string) (Database, error) {
 	return Database{db}, nil
 }
 
-func (d *Database) UploadCache(cache ls.Store) error {
+func (d *Database) UploadCache(cache *ls.Store) error {
 	var databaseData []DatabaseRecord
 	err := d.db.Find(&databaseData)
 	for _, rec := range databaseData {

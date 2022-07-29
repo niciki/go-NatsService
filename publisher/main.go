@@ -60,14 +60,22 @@ func main() {
 	if err == nil {
 		log.Printf("%s sends successfully\n", string(test))
 	}
+	data := [][]byte{[]byte(""), []byte("bad input")}
 Loop:
 	for {
 		select {
-		case <-time.After(2 * time.Second):
-			rec := so.GenerateNewOrder(test)
-			err = sc.Publish(subj, rec)
+		/*case <-time.After(2 * time.Second):
+		data[0] = so.GenerateNewOrder(test)
+		err = sc.Publish(subj, data[0])
+		if err == nil {
+			log.Printf("%s sends successfully\n", string(data[0]))
+		} else {
+			log.Print(err)
+		}*/
+		case <-time.After(1 * time.Second):
+			err = sc.Publish(subj, data[1])
 			if err == nil {
-				log.Printf("%s sends successfully\n", string(rec))
+				log.Printf("%s sends successfully\n", string(data[1]))
 			} else {
 				log.Print(err)
 			}

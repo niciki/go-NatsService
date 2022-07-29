@@ -40,7 +40,7 @@ func main() {
 	}
 	// restore data to cache
 	CacheStore := ls.NewStore()
-	err = database.UploadCache(CacheStore)
+	err = database.UploadCache(&CacheStore)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -94,12 +94,12 @@ func main() {
 				if err != nil {
 					log.Println(err)
 				} else {
-					log.Printf("Отправлены данные с order_uid: %s\n", req.PostFormValue("order_uid"))
+					log.Printf("Sends data with order_uid: %s\n", req.PostFormValue("order_uid"))
 					fmt.Fprint(w, string(b))
 				}
 			} else {
-				log.Println("Структура с таким order_uid отсутствует")
-				fmt.Fprint(w, "Нет записей с таким order_uid ", err)
+				log.Println("Structure with such order_uid doesn't exist")
+				fmt.Fprint(w, "There aren't records with such order_uid ", err)
 			}
 		}
 	})

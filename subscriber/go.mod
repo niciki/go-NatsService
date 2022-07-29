@@ -4,9 +4,9 @@ go 1.18
 
 require (
 	github.com/nats-io/stan.go v0.10.2
-	github.com/niciki/go-NatsService/structures/database v0.0.0-20220728171716-1f0efe34c21e
-	github.com/niciki/go-NatsService/structures/localStore v0.0.0-20220728171716-1f0efe34c21e
-	github.com/niciki/go-NatsService/structures/structOrder v0.0.0-20220728171716-1f0efe34c21e
+	github.com/niciki/go-NatsService/structures/database v0.0.0-20220729095701-bfc2dae6e679
+	github.com/niciki/go-NatsService/structures/localStore v0.0.0-20220729092941-96ca7017d178
+	github.com/niciki/go-NatsService/structures/structOrder v0.0.0-20220725091046-184cc57ded3d
 	github.com/spf13/viper v1.12.0
 )
 
@@ -37,6 +37,7 @@ require (
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
+	github.com/rogpeppe/go-internal v1.8.1 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
