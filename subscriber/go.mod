@@ -4,8 +4,8 @@ go 1.18
 
 require (
 	github.com/nats-io/stan.go v0.10.2
-	github.com/niciki/go-NatsService/structures/database v0.0.0-20220729095701-bfc2dae6e679
-	github.com/niciki/go-NatsService/structures/localStore v0.0.0-20220729092941-96ca7017d178
+	github.com/niciki/go-NatsService/structures/database v0.0.0-20220729150940-76799a2cd20f
+	github.com/niciki/go-NatsService/structures/localStore v0.0.0-20220728171437-d273ba6e27ab
 	github.com/niciki/go-NatsService/structures/structOrder v0.0.0-20220725091046-184cc57ded3d
 	github.com/spf13/viper v1.12.0
 )

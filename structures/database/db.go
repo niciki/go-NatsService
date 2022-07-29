@@ -37,7 +37,10 @@ func (d *Database) UploadCache(cache *ls.Store) error {
 	err := d.db.Find(&databaseData)
 	for _, rec := range databaseData {
 		var JsonOrder so.Order
-		json.Unmarshal([]byte(rec.OrderJson), &JsonOrder)
+		err := json.Unmarshal([]byte(rec.OrderJson), &JsonOrder)
+		if err != nil {
+			log.Print(err)
+		}
 		cache.Add(JsonOrder)
 	}
 	return err.Error
@@ -46,9 +49,13 @@ func (d *Database) UploadCache(cache *ls.Store) error {
 func (d *Database) AddRecord(rec ...so.Order) error {
 	log.Printf("Add to db record: %v", rec)
 	for _, r := range rec {
-		err := d.db.Create(DatabaseRecord{r.OrderUid, fmt.Sprint(r)})
-		if err.Error != nil {
-			return err.Error
+		order, err := json.MarshalIndent(r, "", "\t")
+		if err != nil {
+			log.Print(err)
+		}
+		errGorm := d.db.Create(DatabaseRecord{r.OrderUid, string(order)})
+		if errGorm.Error != nil {
+			return errGorm.Error
 		}
 	}
 	return nil

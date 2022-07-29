@@ -3,7 +3,7 @@ module github.com/niciki/go-NatsService/structures/database
 go 1.18
 
 require (
-	github.com/niciki/go-NatsService/structures/localStore v0.0.0-20220725091046-184cc57ded3d
+	github.com/niciki/go-NatsService/structures/localStore v0.0.0-20220728171437-d273ba6e27ab
 	github.com/niciki/go-NatsService/structures/structOrder v0.0.0-20220725091046-184cc57ded3d
 	gorm.io/driver/postgres v1.3.8
 	gorm.io/gorm v1.23.8

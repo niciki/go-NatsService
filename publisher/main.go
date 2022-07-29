@@ -64,15 +64,15 @@ func main() {
 Loop:
 	for {
 		select {
-		/*case <-time.After(2 * time.Second):
-		data[0] = so.GenerateNewOrder(test)
-		err = sc.Publish(subj, data[0])
-		if err == nil {
-			log.Printf("%s sends successfully\n", string(data[0]))
-		} else {
-			log.Print(err)
-		}*/
-		case <-time.After(1 * time.Second):
+		case <-time.After(2 * time.Second):
+			data[0] = so.GenerateNewOrder(test)
+			err = sc.Publish(subj, data[0])
+			if err == nil {
+				log.Printf("%s sends successfully\n", string(data[0]))
+			} else {
+				log.Print(err)
+			}
+		case <-time.After(30 * time.Second):
 			err = sc.Publish(subj, data[1])
 			if err == nil {
 				log.Printf("%s sends successfully\n", string(data[1]))
