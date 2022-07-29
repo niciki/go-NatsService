@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  postgres:
+    depends_on:
+      - nuts
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: "db_wb"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "userwb"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db:/var/lib/postgresql/data
+
+  nuts:
+    image: nats-streaming:latest
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command:
+      - "--cluster_id"
+      - "test-cluster"

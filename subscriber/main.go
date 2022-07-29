@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"db"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -12,6 +11,7 @@ import (
 	"os/signal"
 
 	"github.com/nats-io/stan.go"
+	db "github.com/niciki/go-NatsService/structures/database"
 	ls "github.com/niciki/go-NatsService/structures/localStore"
 	so "github.com/niciki/go-NatsService/structures/structOrder"
 	"github.com/spf13/viper"
@@ -34,7 +34,7 @@ func main() {
 		log.Fatal(err)
 	}
 	// initialise database and restore data
-	database, err := db.InitDb(viper.GetString("port_poatgresql"))
+	database, err := db.InitDb(viper.GetString("port_postgresql"))
 	if err != nil {
 		log.Fatal(err)
 	}

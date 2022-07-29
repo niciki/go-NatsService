@@ -1,6 +1,8 @@
 package db
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 
 	ls "github.com/niciki/go-NatsService/structures/localStore"
@@ -10,8 +12,8 @@ import (
 )
 
 type DatabaseRecord struct {
-	Order_uid string
-	Order     so.Order
+	OrderUid  string `gorm:"primaryKey;"`
+	OrderJson string
 }
 
 type Database struct {
@@ -19,7 +21,7 @@ type Database struct {
 }
 
 func InitDb(port string) (Database, error) {
-	db, err := gorm.Open(postgres.Open("host=localhost user=user password=user dbname=db_wb_l0 port=" + port))
+	db, err := gorm.Open(postgres.Open(fmt.Sprintf("host=localhost port=%s user=user password=user dbname=db_wb_l0 sslmode=disable" + port)))
 	if err != nil {
 		return Database{}, err
 	}
@@ -34,7 +36,9 @@ func (d *Database) UploadCache(cache ls.Store) error {
 	var databaseData []DatabaseRecord
 	err := d.db.Find(&databaseData)
 	for _, rec := range databaseData {
-		cache.Add(rec.Order)
+		var JsonOrder so.Order
+		json.Unmarshal([]byte(rec.OrderJson), &JsonOrder)
+		cache.Add(JsonOrder)
 	}
 	return err.Error
 }
@@ -42,7 +46,7 @@ func (d *Database) UploadCache(cache ls.Store) error {
 func (d *Database) AddRecord(rec ...so.Order) error {
 	log.Printf("Add to db record: %v", rec)
 	for _, r := range rec {
-		err := d.db.Create(r)
+		err := d.db.Create(DatabaseRecord{r.OrderUid, fmt.Sprint(r)})
 		if err.Error != nil {
 			return err.Error
 		}
