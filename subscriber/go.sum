@@ -274,6 +274,8 @@ github.com/nats-io/stan.go v0.10.2 h1:gQLd05LhzmhFkHm3/qP/klYHfM/hys45GyHa1Uly/k
 github.com/nats-io/stan.go v0.10.2/go.mod h1:vo2ax8K2IxaR3JtEMLZRFKIdoK/3o1/PKueapB7ezX0=
 github.com/niciki/go-NatsService/structures/database v0.0.0-20220729150940-76799a2cd20f h1:UIDit7qVyD27+1YbEhQapmER14pgXmomy0FKtv9Z+1I=
 github.com/niciki/go-NatsService/structures/database v0.0.0-20220729150940-76799a2cd20f/go.mod h1:DRDjfDIH8IBIg3c3qP9PS2shzmkKb1pB8GpVsKe2r6o=
+github.com/niciki/go-NatsService/structures/database v0.0.0-20220729161508-9823cec11f64 h1:yO1wf3ievGwinzv+ThwWa3YpZybk5Y4OieSPOZgYSwQ=
+github.com/niciki/go-NatsService/structures/database v0.0.0-20220729161508-9823cec11f64/go.mod h1:9jVrMntyWvaAU7pHm/JsVc51IAcUkx/Fsz4puKXyhXc=
 github.com/niciki/go-NatsService/structures/localStore v0.0.0-20220728171437-d273ba6e27ab h1:vvBszptdfr1wn1a2D9pJUWp1fUZMDhRUnf4eVUrixt8=
 github.com/niciki/go-NatsService/structures/localStore v0.0.0-20220728171437-d273ba6e27ab/go.mod h1:YjgiJcPlNSLK19Rx57uhyi2+PXB3Hm9TYRqTRrKFKUE=
 github.com/niciki/go-NatsService/structures/structOrder v0.0.0-20220725091046-184cc57ded3d h1:uWCxAh/S7BdoeYvsG2JfrlvGZlqR2xQmZcB9IkCMN1o=
