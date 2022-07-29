@@ -3,6 +3,8 @@ module github.com/niciki/go-NatsService/structures/database
 go 1.18
 
 require (
+	github.com/niciki/go-NatsService/structures/localStore v0.0.0-20220725091046-184cc57ded3d
+	github.com/niciki/go-NatsService/structures/structOrder v0.0.0-20220725091046-184cc57ded3d
 	gorm.io/driver/postgres v1.3.8
 	gorm.io/gorm v1.23.8
 )
@@ -21,8 +23,6 @@ require (
 	github.com/jackc/pgx/v4 v4.16.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.4 // indirect
-	github.com/niciki/go-NatsService/structures/localStore v0.0.0-20220725091046-184cc57ded3d // indirect
-	github.com/niciki/go-NatsService/structures/structOrder v0.0.0-20220725091046-184cc57ded3d // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
