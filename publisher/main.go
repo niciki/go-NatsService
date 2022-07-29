@@ -72,7 +72,7 @@ Loop:
 			} else {
 				log.Print(err)
 			}
-		case <-time.After(30 * time.Second):
+		case <-time.After(17 * time.Second):
 			err = sc.Publish(subj, data[1])
 			if err == nil {
 				log.Printf("%s sends successfully\n", string(data[1]))
