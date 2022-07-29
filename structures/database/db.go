@@ -21,7 +21,7 @@ type Database struct {
 }
 
 func InitDb(port string) (Database, error) {
-	db, err := gorm.Open(postgres.Open(fmt.Sprintf("host=localhost port=%s user=user password=userwb dbname=db_wb sslmode=disable" + port)))
+	db, err := gorm.Open(postgres.Open(fmt.Sprintf("host=localhost port=%s user=user password=userwb dbname=db_wb sslmode=disable", port)))
 	if err != nil {
 		return Database{}, err
 	}
